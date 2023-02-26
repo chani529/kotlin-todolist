@@ -1,16 +1,17 @@
 package com.example.todo
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.todo.adapters.TodoAdapter
+import com.example.todo.api.ApiService
 import com.example.todo.databinding.ActivityMainBinding
+import java.io.IOException
 
 class MainActivity : AppCompatActivity(){
 
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity(){
         binding.addTodo.setOnClickListener {
             todoAdapter.addItem(binding.inputTodo.text.toString())
         }
+        getStationList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -44,5 +46,22 @@ class MainActivity : AppCompatActivity(){
             else -> super.onOptionsItemSelected(item)
         }
     }
+    private suspend fun getStationList(){
+        try {
+            val response = ApiService
+                .builder
+                .getStationList().execute()
+            if (response.isSuccessful) {
+                val stations = response.body()
+                Log.d(TAG,stations.toString())
+                // 성공적으로 응답을 받은 경우 stations를 처리
+            } else {
+                // 응답 코드가 200 이외인 경우 에러 처리
+            }
+        } catch (e: IOException) {
+            // 네트워크 에러 처리
+        }
 
+    }
 }
+
